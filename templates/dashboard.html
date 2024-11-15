@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        /* Basic styling for the navbar */
+        .navbar {
+            background-color: #333;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            color: white;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+        }
+        .navbar a:hover {
+            background-color: #555;
+        }
+        table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <h2>Dashboard</h2>
+        <a href="/upload-file?user_id={{ user_id }}">Upload File</a>
+        <a href="/uploaded-data?user_id={{ user_id }}">View Uploaded Data</a>  <!-- New link to the uploaded data page -->
+    </div>
+
+    <h1>User Task Dashboard</h1>
+    <h2>User ID: {{ user_id }}</h2>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Task ID</th>
+                <th>Status</th>
+                <th>Progress</th>
+            </tr>
+        </thead>
+        <tbody id="taskTableBody">
+            <!-- Rows will be dynamically populated here -->
+        </tbody>
+    </table>
+
+    <script>
+        const userId = "{{ user_id }}";  // Pass the user ID to JavaScript
+
+        // Function to fetch tasks and update the table
+        async function fetchTasks() {
+            try {
+                const response = await fetch(`/api/tasks/${userId}`);
+                const data = await response.json();
+
+                const taskTableBody = document.getElementById('taskTableBody');
+                taskTableBody.innerHTML = ''; // Clear any existing rows
+
+                data.tasks.forEach(task => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${task.task_id}</td>
+                        <td>${task.status}</td>
+                        <td>${task.progress}%</td>
+                    `;
+                    taskTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching tasks:', error);
+            }
+        }
+
+        // Fetch tasks when the page loads
+        window.onload = fetchTasks;
+    </script>
+</body>
+</html>

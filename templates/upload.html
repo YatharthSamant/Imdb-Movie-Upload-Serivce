@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>File Upload</title>
+</head>
+<body>
+    <h2>Upload File</h2>
+
+    <form id="uploadForm" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" id="fileInput" required>
+        <button type="submit">Upload File</button>
+    </form>
+
+    <p id="errorMsg" style="color: red; display: none;">File size must be less than 10GB.</p>
+
+    <script>
+        const userId = new URLSearchParams(window.location.search).get('user_id');
+
+        document.getElementById('uploadForm').action = `/upload-file?user_id=${userId}`;
+
+        document.getElementById('uploadForm').onsubmit = function(event) {
+            const fileInput = document.getElementById('fileInput');
+            const maxSize = 10 * 1024 * 1024 * 1024; // 10 GB in bytes
+
+            if (fileInput.files[0].size > maxSize) {
+                event.preventDefault(); // Prevent form submission
+                document.getElementById('errorMsg').style.display = 'block';
+            }
+        };
+    </script>
+</body>
+</html>

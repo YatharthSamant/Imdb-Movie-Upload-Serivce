@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtered Uploaded Data</title>
+</head>
+<body>
+    <h1>Uploaded Data</h1>
+    <h2>User ID: {{ user_id }}</h2>
+
+    <!-- Filtering Controls -->
+    <form id="filtersForm">
+        <label for="release_date">Release Date:</label>
+        <input type="text" id="release_date" name="release_date" placeholder="Filter by release date">
+
+        <label for="sort_by">Sort By:</label>
+        <select id="sort_by" name="sort_by">
+            <option value="date_added">Date Added</option>
+            <option value="release_year">Release Date</option>
+            <option value="duration">Duration</option>
+        </select>
+
+        <label for="order">Order:</label>
+        <select id="order" name="order">
+            <option value="desc">Descending</option>
+            <option value="asc">Ascending</option>
+        </select>
+
+        <button type="button" onclick="fetchData(1)">Apply Filters</button>
+    </form>
+
+    <!-- Table for displaying uploaded data -->
+    <table border="1" id="dataTable">
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Date Added</th>
+                <th>Release Date</th>
+                <th>Duration</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be dynamically populated here -->
+        </tbody>
+    </table>
+
+    <!-- Pagination Controls -->
+    <div id="paginationControls">
+        <button onclick="fetchData(currentPage - 1)" id="prevButton" disabled>Previous</button>
+        <span id="paginationInfo"></span>
+        <button onclick="fetchData(currentPage + 1)" id="nextButton" disabled>Next</button>
+    </div>
+
+    <script>
+        const userId = "{{ user_id }}";  // Pass the user ID dynamically
+        let currentPage = 1;
+        const perPage = 10;
+
+        async function fetchData(page) {
+            // Prevent invalid page numbers
+            if (page < 1) return;
+
+            const releaseDate = document.getElementById('release_date').value;
+            const sortBy = document.getElementById('sort_by').value;  // Ensure this gets the selected value
+            const order = document.getElementById('order').value;
+
+            try {
+                const response = await fetch(`/api/uploaded-data?user_id=${userId}&page=${page}&per_page=${perPage}&sort_by=${sortBy}&order=${order}&release_date=${releaseDate}`);
+                const data = await response.json();
+
+                // Populate the table with the filtered data
+                const dataTable = document.getElementById('dataTable').querySelector('tbody');
+                dataTable.innerHTML = '';  // Clear any existing rows
+
+                data.uploads.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.file_name || 'N/A'}</td>
+                        <td>${item.date_added || 'N/A'}</td>
+                        <td>${item.release_date || 'N/A'}</td>
+                        <td>${item.duration || 'N/A'}</td>
+                    `;
+                    dataTable.appendChild(row);
+                });
+
+                // Update pagination controls
+                currentPage = data.page;
+                const paginationInfo = document.getElementById('paginationInfo');
+                paginationInfo.innerText = `Page ${data.page} of ${data.total_pages}`;
+
+                // Enable or disable pagination buttons based on current page
+                document.getElementById('prevButton').disabled = currentPage === 1;
+                document.getElementById('nextButton').disabled = currentPage === data.total_pages;
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Fetch initial data
+        window.onload = () => fetchData(1);
+    </script>
+</body>
+</html>
