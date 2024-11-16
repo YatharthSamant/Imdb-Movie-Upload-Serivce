@@ -1,0 +1,12 @@
+pandas==2.2.3
+bcrypt==4.2.0
+async-timeout==5.0.1
+redis==5.2.0
+pymongo==4.10.1
+Flask==3.1.0
+Flask-Login==0.6.3
+python-dotenv==1.0.1
+Flask-WTF==1.2.2
+setuptools==68.2.0
+wheel==0.41.2
+pytest==8.3.3

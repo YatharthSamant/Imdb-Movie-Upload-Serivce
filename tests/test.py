@@ -21,12 +21,12 @@ def setup_mongo():
     # Setup test database
     db.users.delete_many({})
     db.file_upload_tasks.delete_many({})
-    db.file_upload_service.delete_many({})
+    db.movies_data.delete_many({})
     yield db
     # Cleanup test database
     db.users.delete_many({})
     db.file_upload_tasks.delete_many({})
-    db.file_upload_service.delete_many({})
+    db.movies_data.delete_many({})
 
 def test_register_user(client, setup_mongo):
     response = client.post('/register', data={
@@ -114,7 +114,7 @@ def test_uploaded_data_page(client, setup_mongo):
     assert b"Uploaded Data" in response.data
 
 def test_uploaded_data_api(client, setup_mongo):
-    db.file_upload_service.insert_many([
+    db.movies_data.insert_many([
         {"title": "file1", "date_added": "2024-11-15", "release_year": "2023", "duration": 120},
         {"title": "file2", "date_added": "2024-11-14", "release_year": "2022", "duration": 90}
     ])

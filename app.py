@@ -50,7 +50,7 @@ def upload_csv_to_mongo(file_path, task_id, user_id, chunk_size=10000):
     for chunk in chunk_iter:
         # Convert chunk to dictionary and upload to MongoDB
         records = chunk.to_dict("records")
-        db.file_upload_service.insert_many(records)
+        db.movies_data.insert_many(records)
 
         # Update Redis with progress
         rows_processed += len(records)
@@ -71,7 +71,7 @@ def upload_csv_to_mongo(file_path, task_id, user_id, chunk_size=10000):
         for chunk in chunk_iter:
             # Convert chunk to dictionary and upload to MongoDB
             records = chunk.to_dict("records")
-            db.file_upload_service.insert_many(records)
+            db.movies_data.insert_many(records)
 
             # Update Redis and MongoDB with progress
             rows_processed += len(records)
@@ -150,11 +150,12 @@ def upload_file():
 
 @app.route("/", methods=["GET"])
 def home():
-    return redirect("register")
+
+    return redirect("/register")
 
 @app.route("/register", methods=["GET","POST"])
 def register():
-    if '_user_id' in session:  # Assuming you're using Flask sessions to track login state
+    if session and session.get("_user_id"):
         return redirect(url_for("dashboard"))
 
     form = RegistrationForm()
@@ -175,7 +176,7 @@ def register():
 
 @app.route("/login", methods=["GET","POST"])
 def login():
-    if '_user_id' in session:  # Assuming you're using Flask sessions to track login state
+    if session and '_user_id' in session:
         return redirect(url_for("dashboard"))
 
     form = LoginForm()
@@ -240,12 +241,11 @@ def get_uploaded_data():
 
     # MongoDB query with pagination and sorting
     skips = (page - 1) * page_size
-    cursor = db.file_upload_service.find().sort(sort_by, sort_direction).skip(skips).limit(page_size)
+    cursor = db.movies_data.find().sort(sort_by, sort_direction).skip(skips).limit(page_size)
 
     # Format results
     uploads = []
     for upload in cursor:
-        print(upload)
         uploads.append({
             "file_name": upload.get("title"),
             "date_added": upload.get("date_added"),
@@ -253,7 +253,7 @@ def get_uploaded_data():
             "duration": upload.get("duration")
         })
     # Get total count for pagination metadata
-    total_count = db.file_upload_service.count_documents({})
+    total_count = db.movies_data.count_documents({})
     total_pages = (total_count + page_size - 1) // page_size
 
     # Return JSON response with pagination and sorting info
