@@ -61,7 +61,29 @@ The **IMDb Movie Upload Service** is a web application designed to upload, proce
 ## Database 
 
 - **User Table: The user table stores user credentials.**:
-  ```bash 
+  ```bash
+      {
+      "user": {
+        "indexes": [
+          {
+            "fields": ["username"],
+            "unique": true
+          }
+        ],
+        "schema": {
+          "_id": {
+            "type": "ObjectId"
+          },
+          "username": {
+            "type": "str"
+          },
+          "password": {
+            "type": "str"
+          }
+        }
+      },
+      
+      Example : 
     {
     "_id": ObjectId("67388219712f6fe85e0fd194"),
     "username": "yath",
@@ -72,7 +94,44 @@ The **IMDb Movie Upload Service** is a web application designed to upload, proce
 
 - **File Upload Tasks Table**
   - The file_upload_tasks table stores information about the file upload tasks, including the status, progress, and user ID associated with the task
-      ```bash 
+      ```bash
+        "file_upload_tasks": {
+        ""indexes": [
+          {
+            "fields": { "task_id": 1 },
+            "unique": true
+          },
+          {
+            "fields": { "user_id": 1 },
+            "unique": false
+          }
+        ]
+        "schema": {
+          "_id": {
+            "type": "ObjectId"
+          },
+          "task_id": {
+            "type": "str"
+          },
+          "created_at": {
+            "type": "ISODate"
+          },
+          "progress": {
+            "type": "int"
+          },
+          "status": {
+            "type": "str"
+          },
+          "updated_at": {
+            "type": "ISODate"
+          },
+          "user_id": {
+            "type": "str"
+          }
+        }
+      },
+    
+    Example:
       {
       "_id": ObjectId("67388211c0ed5e66330fec2d"),
       "task_id": "1c44231c-4cb0-4992-81a3-8d515c19bc72",
