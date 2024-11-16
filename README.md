@@ -30,6 +30,7 @@ The **IMDb Movie Upload Service** is a web application designed to upload, proce
 - Python 3.8 or later
 - MongoDB (for storing user and movie data)
 - A modern web browser
+- Redis
 
 ### Steps to Run Locally
 1. Clone the repository:
